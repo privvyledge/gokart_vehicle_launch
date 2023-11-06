@@ -1,4 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Launch the vehicle actuators and joystick controllers. Same as gokart_bringup.launch.py
+ Todo:
+    * check Autoware's implementation to also launch URDF/TFs and vehicle info
+    * launch static_tfs
+ -->
+
 <launch>
   <arg name="vehicle_id" default="$(env VEHICLE_ID default)"/>
+  <arg name="launch_joy_driver" default="true" description="" />
+  <arg name="joy_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="launch_at9s_driver" default="true" description="" />
+  <arg name="at9s_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="launch_cockpit_driver" default="true" description="" />
+  <arg name="cockpit_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="mux_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="vesc_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="interpolate_throttle" default="false" description="" />
+
+  <!-- Start joy node -->
+  <node pkg="joy" exec="joy_node" name="joy" if="$(var launch_joy_driver)" >
+    <param from="$(var joy_config_path)" />
+  </node>
+
+  <!-- Start at9s node -->
+  <node pkg="at9s_joy" exec="at9s_joy" name="at9s_joy" if="$(var launch_at9s_driver)" >
+    <param from="$(var at9s_config_path)" />
+  </node>
+
+  <!-- Start cockpit node. Todo -->
+
+  <!-- Open joy to Ackermann teleop converter -->
+  <node pkg="joy_teleop" exec="joy_teleop" name="joy_teleop" if="$(var launch_joy_driver)" >
+    <param from="$(var joy_config_path)" />
+  </node>
+
+  <!-- Open at9s to Ackermann teleop converter -->
+  <node pkg="joy_teleop" exec="joy_teleop" name="at9s_teleop" if="$(var launch_at9s_driver)" >
+    <param from="$(var at9s_config_path)" />
+  </node>
+
+  <!-- Open cockpit to Ackermann teleop converter. Todo -->
+
+  <!-- Start MUX node -->
+  <node pkg="ackermann_mux" exec="ackermann_mux" name="ackermann_mux" >
+    <param from="$(var mux_config_path)" />
+    <remap from="ackermann_cmd_out" to="ackermann_drive" />
+  </node>
+
+  <!-- Start VESC -->
+  <node pkg="vesc_driver" exec="vesc_driver_node" name="vesc_driver_node" >
+    <param from="$(var vesc_config_path)" />
+  </node>
+
+  <node pkg="vesc_ackermann" exec="ackermann_to_vesc_node" name="ackermann_to_vesc_node" >
+    <param from="$(var vesc_config_path)" />
+  </node>
+
+  <node pkg="vesc_ackermann" exec="vesc_to_odom_node" name="vesc_to_odom_node" >
+    <param from="$(var vesc_config_path)" />
+  </node>
+
+  <!-- Start throttle_interpolator node -->
+  <node pkg="f1tenth_stack" exec="throttle_interpolator" name="throttle_interpolator" if="$(var interpolate_throttle)" >
+    <param from="$(var vesc_config_path)" />
+  </node>
+
 </launch>

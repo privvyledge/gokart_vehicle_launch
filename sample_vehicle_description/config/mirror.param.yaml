@@ -1,8 +1,10 @@
+# used to create a safety margin around the car.
+# tolerance = 0.3 meter
 /**:
   ros__parameters:
-    min_longitudinal_offset: 1.8
-    max_longitudinal_offset: 3.2
-    min_lateral_offset: -1.4
-    max_lateral_offset: 1.4
-    min_height_offset: 0.8
-    max_height_offset: 1.5
+    min_longitudinal_offset: 0.7191 # -(rear_overhang + tolerance)
+    max_longitudinal_offset: 1.8875 # (front_overhang + wheelbase + tolerance)
+    min_lateral_offset: -1.0747 # -((wheel_tread/2 + right_overhang) + tolerance)
+    max_lateral_offset: 1.0747 # (wheel_tread/2 + left_overhang + tolerance)
+    min_height_offset: 0.3 #  (tolerance or wheel_radius)
+    max_height_offset: 0.808 # (vehicle_height + tolerance)
