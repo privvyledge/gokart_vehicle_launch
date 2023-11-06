@@ -9,13 +9,13 @@
 <launch>
   <arg name="vehicle_id" default="$(env VEHICLE_ID default)"/>
   <arg name="launch_joy_driver" default="true" description="" />
-  <arg name="joy_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="joy_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/joy_teleop.yaml" description="" />
   <arg name="launch_at9s_driver" default="true" description="" />
-  <arg name="at9s_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="at9s_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/at9s_teleop.yaml" description="" />
   <arg name="launch_cockpit_driver" default="true" description="" />
-  <arg name="cockpit_config_path" default="$(find-pkg-share mypackage)" description="" />
-  <arg name="mux_config_path" default="$(find-pkg-share mypackage)" description="" />
-  <arg name="vesc_config_path" default="$(find-pkg-share mypackage)" description="" />
+  <arg name="cockpit_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/cockpit.yaml" description="" />
+  <arg name="mux_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/mux.yaml" description="" />
+  <arg name="vesc_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/vesc.yaml" description="" />
   <arg name="interpolate_throttle" default="false" description="" />
 
   <!-- Start joy node -->
