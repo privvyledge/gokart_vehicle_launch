@@ -17,10 +17,10 @@ ackermann_mux:
         timeout : 0.1
         priority: 100
       at9s_joystick:
-        topic: teleop
+        topic: at9s_teleop
         timeout: 0.2
         priority: 90
       cockpit_joystick:
-        topic: teleop
+        topic: cockpit_teleop
         timeout: 0.2
         priority: 80
