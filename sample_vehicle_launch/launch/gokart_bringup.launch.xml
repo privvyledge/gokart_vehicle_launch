@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    To be used to launch the vehicle in a standalone environment.
+    If launching with Autoware, use tier4_vehicle_launch/launch/vehicle.launch.xml in Autoware.universe instead.
+-->
+
+<launch>
+  <arg name="launch_vehicle_interface"/>
+  <arg name="vehicle_model" default="sample_vehicle" description="vehicle model name"/>
+  <arg name="sensor_model" default="sample_sensor_kit" description="sensor model name"/>
+  <arg name="vehicle_id" default="$(env VEHICLE_ID default)" description="vehicle specific ID"/>
+  <arg name="initial_engage_state" default="false" description="/vehicle/engage state after starting Autoware"/>
+  <arg name="config_dir" default="$(find-pkg-share $(var sensor_model)_description)/config" description="path to dir where sensors_calibration.yaml, etc. are located"/>
+
+  <let name="vehicle_launch_pkg" value="$(find-pkg-share $(var vehicle_model)_launch)"/>
+
+  <!-- vehicle description -->
+  <group>
+    <arg name="model_file" default="$(var vehicle_launch_pkg)_description/urdf/autonomous_vehicle.xacro" description="path to the file of model settings (*.xacro)"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" exec="robot_state_publisher">
+      <param name="robot_description" value="$(command 'xacro $(var model_file) vehicle_model:=$(var vehicle_model) sensor_model:=$(var sensor_model) config_dir:=$(var config_dir)' 'warn')"/>
+    </node>
+  </group>
+
+  <!-- vehicle interface -->
+  <group if="$(var launch_vehicle_interface)">
+    <include file="$(var vehicle_launch_pkg)/launch/vehicle_interface.launch.xml">
+      <arg name="vehicle_id" value="$(var vehicle_id)"/>
+<!--      <arg name="initial_engage_state" value="$(var initial_engage_state)"/>-->
+    </include>
+  </group>
+</launch>
