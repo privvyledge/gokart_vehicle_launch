@@ -13,10 +13,12 @@
   <arg name="launch_at9s_driver" default="true" description="" />
   <arg name="at9s_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/at9s_teleop.yaml" description="" />
   <arg name="launch_cockpit_driver" default="true" description="" />
-  <arg name="cockpit_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/cockpit.yaml" description="" />
+  <arg name="cockpit_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/cockpit_teleop.yaml" description="" />
   <arg name="mux_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/mux.yaml" description="" />
+  <arg name="launch_dbw" default="true" description="" />
   <arg name="vesc_config_path" default="$(find-pkg-share sample_vehicle_launch)/config/vesc.yaml" description="" />
   <arg name="interpolate_throttle" default="false" description="" />
+  <arg name="launch_sbw" default="true" description="" />
 
   <!-- Start joy node -->
   <node pkg="joy" exec="joy_node" name="joy" if="$(var launch_joy_driver)" >
@@ -26,9 +28,9 @@
   <!-- Start at9s node -->
   <node pkg="at9s_joy" exec="at9s_joy" name="at9s_joy" if="$(var launch_at9s_driver)" >
     <param from="$(var at9s_config_path)" />
+<!--    <param name="sensitivity" value="0.5"/>-->
+    <param from="$(find-pkg-share at9s_joy)/config/param.yaml" />
   </node>
-
-  <!-- Start cockpit node. Todo -->
 
   <!-- Open joy to Ackermann teleop converter -->
   <node pkg="joy_teleop" exec="joy_teleop" name="joy_teleop" if="$(var launch_joy_driver)" >
@@ -38,9 +40,14 @@
   <!-- Open at9s to Ackermann teleop converter -->
   <node pkg="joy_teleop" exec="joy_teleop" name="at9s_teleop" if="$(var launch_at9s_driver)" >
     <param from="$(var at9s_config_path)" />
+    <remap from="joy" to="/joy/at9s" />
   </node>
 
-  <!-- Open cockpit to Ackermann teleop converter. Todo -->
+  <!-- Open cockpit to Ackermann teleop converter. -->
+  <node pkg="joy_teleop" exec="joy_teleop" name="cockpit_teleop" if="$(var launch_cockpit_driver)" >
+    <param from="$(var cockpit_config_path)" />
+    <remap from="joy" to="/joy/cockpit" />
+  </node>
 
   <!-- Start MUX node -->
   <node pkg="ackermann_mux" exec="ackermann_mux" name="ackermann_mux" >
@@ -48,22 +55,39 @@
     <remap from="ackermann_cmd_out" to="ackermann_drive" />
   </node>
 
-  <!-- Start VESC -->
-  <node pkg="vesc_driver" exec="vesc_driver_node" name="vesc_driver_node" >
-    <param from="$(var vesc_config_path)" />
-  </node>
+  <!-- Start the Drive-By-Wire interface -->
+  <group if="$(var launch_dbw)">
+      <!-- Start VESC -->
+      <node pkg="vesc_driver" exec="vesc_driver_node" name="vesc_driver_node" >
+        <param from="$(var vesc_config_path)" />
+      </node>
 
-  <node pkg="vesc_ackermann" exec="ackermann_to_vesc_node" name="ackermann_to_vesc_node" >
-    <param from="$(var vesc_config_path)" />
-  </node>
+      <node pkg="vesc_ackermann" exec="ackermann_to_vesc_node" name="ackermann_to_vesc_node" >
+        <param from="$(var vesc_config_path)" />
+      </node>
 
-  <node pkg="vesc_ackermann" exec="vesc_to_odom_node" name="vesc_to_odom_node" >
-    <param from="$(var vesc_config_path)" />
-  </node>
+      <node pkg="vesc_ackermann" exec="vesc_to_odom_node" name="vesc_to_odom_node" >
+        <param from="$(var vesc_config_path)" />
+      </node>
 
-  <!-- Start throttle_interpolator node -->
-  <node pkg="f1tenth_stack" exec="throttle_interpolator" name="throttle_interpolator" if="$(var interpolate_throttle)" >
-    <param from="$(var vesc_config_path)" />
-  </node>
+      <!-- Start throttle_interpolator node -->
+      <node pkg="f1tenth_stack" exec="throttle_interpolator" name="throttle_interpolator" if="$(var interpolate_throttle)" >
+        <param from="$(var vesc_config_path)" />
+      </node>
+  </group>
+
+<!--   Start the Steer-by-wire interface. ros2 run micro_ros_agent micro_ros_agent serial &#45;&#45;dev /dev/ttyACM1.
+
+  Note that the args cannot be passed from an arg tag above because it will be interpreted as a string which will fail. -->
+<!--  <group if="$(var launch_sbw)">-->
+<!--      <node pkg="micro_ros_agent" exec="micro_ros_agent" name="micro_ros_agent" args="serial dev /dev/ttyACM1" output="screen" />-->
+<!--&lt;!&ndash;      <executable cmd="ros2 run micro_ros_agent micro_ros_agent serial dev /dev/ttyACM1" output="screen"/>&ndash;&gt;-->
+<!--  </group>-->
+
+  <group if="$(var launch_sbw)">
+      <node pkg="command_center" exec="command_center" name="command_center_node" output="screen">
+        <param name="serial_port" value="/dev/ttyACM0"/>
+      </node>
+  </group>
 
 </launch>

@@ -14,13 +14,13 @@ ackermann_mux:
         priority: 10
       joystick:
         topic   : teleop
-        timeout : 0.1
-        priority: 100
+        timeout : 0.2
+        priority: 200  # 100
       at9s_joystick:
-        topic: at9s_teleop
-        timeout: 0.2
-        priority: 90
+        topic: teleop_at9s
+        timeout: 1.0
+        priority: 100
       cockpit_joystick:
-        topic: cockpit_teleop
+        topic: teleop_cockpit
         timeout: 0.2
-        priority: 80
+        priority: 50

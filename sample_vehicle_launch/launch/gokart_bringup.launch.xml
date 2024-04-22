@@ -3,10 +3,16 @@
 <!--
     To be used to launch the vehicle in a standalone environment.
     If launching with Autoware, use tier4_vehicle_launch/launch/vehicle.launch.xml in Autoware.universe instead.
+
+    Todo:
+        * move to gokart_launch
 -->
 
 <launch>
-  <arg name="launch_vehicle_interface"/>
+  <arg name="launch_vehicle_interface" default="true" description="whether to start the vehicle actuators" />
+  <arg name="launch_vehicle_description" default="false" description="whether to publish the vehicle parameters and tfs" />
+  <arg name="launch_sensors" default="true" description="whether to launch the sensors"/>
+  <arg name="launch_sensor_description" default="false" description="whether to publish the sensors parameters and tfs/positions relative to the cars base_link" />
   <arg name="vehicle_model" default="sample_vehicle" description="vehicle model name"/>
   <arg name="sensor_model" default="sample_sensor_kit" description="sensor model name"/>
   <arg name="vehicle_id" default="$(env VEHICLE_ID default)" description="vehicle specific ID"/>
@@ -16,8 +22,8 @@
   <let name="vehicle_launch_pkg" value="$(find-pkg-share $(var vehicle_model)_launch)"/>
 
   <!-- vehicle description -->
-  <group>
-    <arg name="model_file" default="$(var vehicle_launch_pkg)_description/urdf/autonomous_vehicle.xacro" description="path to the file of model settings (*.xacro)"/>
+  <group  if="$(var launch_vehicle_description)">
+    <arg name="model_file" default="$(find-pkg-share $(var vehicle_model)_description)/urdf/autonomous_vehicle.xacro" description="path to the file of model settings (*.xacro)"/>
     <node name="robot_state_publisher" pkg="robot_state_publisher" exec="robot_state_publisher">
       <param name="robot_description" value="$(command 'xacro $(var model_file) vehicle_model:=$(var vehicle_model) sensor_model:=$(var sensor_model) config_dir:=$(var config_dir)' 'warn')"/>
     </node>
@@ -28,6 +34,14 @@
     <include file="$(var vehicle_launch_pkg)/launch/vehicle_interface.launch.xml">
       <arg name="vehicle_id" value="$(var vehicle_id)"/>
 <!--      <arg name="initial_engage_state" value="$(var initial_engage_state)"/>-->
+    </include>
+  </group>
+
+  <!-- launch sensors -->
+  <group if="$(var launch_sensors)">
+    <include file="$(find-pkg-share sample_sensor_kit_launch)/launch/sensing.launch.xml">
+      <arg name="launch_driver" value="$(var launch_sensors)"/>
+      <arg name="autoware_launch" value="false"/>
     </include>
   </group>
 </launch>

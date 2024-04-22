@@ -1,5 +1,6 @@
 # used to create a safety margin around the car.
 # tolerance = 0.3 meter
+# See: https://autowarefoundation.github.io/autoware-documentation/main/how-to-guides/integrating-autoware/creating-vehicle-and-sensor-model/creating-vehicle-model/
 /**:
   ros__parameters:
     min_longitudinal_offset: 0.7191 # -(rear_overhang + tolerance)
