@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!-- todo: move to gokart_launch -->
 <robot name="vehicle" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:arg name="vehicle_model" default="sample_vehicle"/>
   <xacro:arg name="sensor_model" default="sample_sensor_kit"/>

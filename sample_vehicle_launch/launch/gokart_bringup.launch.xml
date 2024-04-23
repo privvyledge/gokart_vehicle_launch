@@ -4,15 +4,13 @@
     To be used to launch the vehicle in a standalone environment.
     If launching with Autoware, use tier4_vehicle_launch/launch/vehicle.launch.xml in Autoware.universe instead.
 
-    Todo:
-        * move to gokart_launch
 -->
 
 <launch>
   <arg name="launch_vehicle_interface" default="true" description="whether to start the vehicle actuators" />
-  <arg name="launch_vehicle_description" default="false" description="whether to publish the vehicle parameters and tfs" />
+  <arg name="launch_vehicle_description" default="true" description="whether to publish the vehicle parameters and tfs" />
   <arg name="launch_sensors" default="true" description="whether to launch the sensors"/>
-  <arg name="launch_sensor_description" default="false" description="whether to publish the sensors parameters and tfs/positions relative to the cars base_link" />
+  <arg name="launch_sensor_description" default="true" description="whether to publish the sensors parameters and tfs/positions relative to the cars base_link" />
   <arg name="vehicle_model" default="sample_vehicle" description="vehicle model name"/>
   <arg name="sensor_model" default="sample_sensor_kit" description="sensor model name"/>
   <arg name="vehicle_id" default="$(env VEHICLE_ID default)" description="vehicle specific ID"/>
